@@ -1,0 +1,199 @@
+
+<html lang="en">
+
+<head>
+    <title>Data Table</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .active {
+            background-color: darkgreen;
+            color: whitesmoke;
+        }
+        .error-valid {
+            color:red;
+            padding-top: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h4 class="mb-4">Table data for AJAX</h4>
+        <div class="row">
+            <div class="col-lg-4">
+                <form method="post" name="adddata_form" action="adddata.php">
+                    <div class="form-group row">
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Product name" id="name" name="name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <input type="number" class="form-control" placeholder="QTY" id="qty" name="qty">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <input type="number" class="form-control" placeholder="Price" id="price" name="price">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-success btn-block" value="Add Product">
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-8">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="bg-info" style="text-align: center">
+                            <th style="width:15px;">#</th>
+                            <th>Name</th>
+                            <th style="width:100px;">QTY</th>
+                            <th style="width:120px;">Price</th>
+                            <th style="width:92px;">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        // initial JQuery Function
+        $(function () {
+
+            $('h4')
+                .css('color', 'while')
+                .css('background-color', 'pink');
+            $('table tbody tr').mouseover(function () {
+                $(this).addClass('active');
+            });
+            $('table tbody tr').mouseout(function () {
+                $(this).removeClass('active');
+            }); // end initial
+
+
+            //$('input[type=submit]').click(function () {
+            $('form[name=adddata_form]').validate({
+                rules: {
+                    name:{ //input name
+                        required:true
+                    },
+                    qty:{
+                        required:true,
+                        max:1000,
+                        number:true
+                    },
+                    price:{
+                        required:true,
+                        number:true
+                    },
+
+                },
+                messages: {
+                    name:{
+                        required:"กรุณากรอกชื่อสินค้า"
+                    },
+                    qty:{
+                        required:"กรุณากรอกจำนวนสินค้า",
+                        max:"จำนวนสินค้า ไม่เกิน 1000",
+                        number:"จำนวนสินค้าต้องเป็นตัวเลข",
+                    },
+                    price:{
+                        required:"กรุณากรอกราคาสินค้า"
+                    },
+                    
+
+                },
+                errorClass: "error-valid",
+                errorPalcement: function (error, element) {
+                    error.appendTo(element.parent());
+                },
+                submitHandler: function (form) {
+                    var product_name = $('#name').val();
+                    var product_qty = $('#qty').val();
+                    var product_price = $('#price').val();
+
+                //    if (product_name != "" && product_qty != "" && product_price != "") {
+
+                        var row = $('table tbody tr').length;
+
+                        var trstring = "<tr>" +
+                            "<td>" + (row + 1) + "</td>" +
+                            "<td>" + product_name + "</td>" +
+                            "<td style='text-align: center'>" + product_qty + "</td>" +
+                            "<td style='text-align: right'>" + product_price + "</td>" +
+                            "<td style='text-align: center'>" +
+                            "<a href='#' id='btnedit' class='btn btn-warning btn-sm'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>" +
+                            " <a href='#' id='btndel' class='btn btn-danger btn-sm'><i class='fa fa-trash-o' aria-hidden='true'></i></a>" +
+                            "</td>" +
+                            "</tr>";
+                        //append end of table
+                        $('table tbody').append(trstring);
+
+                        $('form').trigger('reset');
+
+                        $('#name').focus();
+                 //   }  
+                } // end of Validate
+            }); // end of Add Product
+
+            $('body').on('click', 'a#btndel', function () {
+                // $(this).parent().parent().remove();
+                $(this).closest('tr').remove();
+            }); // end of Remove
+
+            $('body').on('click', 'a#btnedit', function () {
+                //call modal
+                $('#modaledit').modal('show');
+            }); // end of Edit
+
+
+        });
+    </script>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="modaledit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h2>...</h2>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fa fa-window-close" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
